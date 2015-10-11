@@ -2,9 +2,9 @@ export class Single {
     data;
     schema;
 
-    constructor(object, schema, listMode) {
-        if (!listMode && typeof object !== 'object') throw new Error('Transformer received no valid object');
-        if (!listMode && object instanceof Array) throw new Error('Transformer received no valid object');
+    constructor(object, schema) {
+        if (typeof object !== 'object') throw new Error('Transformer received no valid object');
+        if (object instanceof Array) throw new Error('Transformer received no valid object');
         this.data = object;
         if (!schema) throw new Error('Transformer received no valid schema');
         this.schema = schema;
@@ -51,7 +51,8 @@ export class Single {
 export class List extends Single {
     constructor(array, schema) {
         if (!(array instanceof Array)) throw new Error('Transformer received no valid array');
-        super(array, schema, true);
+        super({}, schema);
+        this.data = array;
     }
 
     parse() {
