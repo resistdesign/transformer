@@ -1,6 +1,6 @@
 var path = require('path');
 var expect = require('must');
-var Transformer = require(path.join(process.cwd(), 'src', 'object-transformer'));
+var Transformer = require('../../index');
 
 describe('Transformer', function () {
 

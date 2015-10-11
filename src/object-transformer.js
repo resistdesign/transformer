@@ -1,68 +1,64 @@
-var Add = function (key, value) {
-    this.schema[key] = value;
-    return this;
-};
+export class Single {
+    data;
+    schema;
 
-var Remove = function (key) {
-    delete this.schema[key];
-    return this;
-};
+    constructor(object, schema, listMode) {
+        if (!listMode && typeof object !== 'object') throw new Error('Transformer received no valid object');
+        if (!listMode && object instanceof Array) throw new Error('Transformer received no valid object');
+        this.data = object;
+        if (!schema) throw new Error('Transformer received no valid schema');
+        this.schema = schema;
+    }
 
-var Single = function (object, schema) {
-    if (!object instanceof Object) throw new Error('Transformer received no valid object');
-    if (object instanceof Array) throw new Error('Transformer received no valid object');
-    this.object = object;
-    if (!schema) throw new Error('Transformer received no valid schema');
-    this.schema = schema;
-    return this;
-};
+    add(key, value) {
+        this.schema[key] = value;
+        return this;
+    }
 
-Single.prototype.add = Add;
-Single.prototype.remove = Remove;
-Single.prototype.parse = function () {
-    var response = {};
-    for (var index in this.schema) {
-        var split = this.schema[index].split('.');
-        var value = this.object[split[0]];
-        var breadcrumbs = split[0];
+    remove(key) {
+        delete this.schema[key];
+        return this;
+    }
 
-        if (!value && split.length > 1) {
-            throw new Error('Malformed object, missing attribute "' +
-                breadcrumbs + '" when trying to get attribute ' +
-                breadcrumbs + '[' + split[1] + ']');
-        }
+    parse() {
+        var response = {};
+        for (var index in this.schema) {
+            var split = this.schema[index].split('.');
+            var value = this.data[split[0]];
+            var breadcrumbs = split[0];
 
-        for (var i = 1; i < split.length; i++) {
-            breadcrumbs += '[' + split[i] + ']';
-            if (!value[split[i]] && i + 1 !== split.length) {
+            if (!value && split.length > 1) {
                 throw new Error('Malformed object, missing attribute "' +
                     breadcrumbs + '" when trying to get attribute ' +
-                    breadcrumbs + '[' + split[i + 1] + ']');
+                    breadcrumbs + '[' + split[1] + ']');
             }
-            value = value[split[i]];
+
+            for (var i = 1; i < split.length; i++) {
+                breadcrumbs += '[' + split[i] + ']';
+                if (!value[split[i]] && i + 1 !== split.length) {
+                    throw new Error('Malformed object, missing attribute "' +
+                        breadcrumbs + '" when trying to get attribute ' +
+                        breadcrumbs + '[' + split[i + 1] + ']');
+                }
+                value = value[split[i]];
+            }
+            response[index] = value;
         }
-        response[index] = value;
+        return response;
     }
-    return response;
-};
+}
 
-var List = function (array, schema) {
-    if (!array instanceof Array) throw new Error('Transformer received no valid array');
-    this.array = array;
-    if (!schema) throw new Error('Transformer received no valid schema');
-    this.schema = schema;
-};
-
-List.prototype.parse = function () {
-    var response = [];
-    for (var i in this.array) {
-        response.push(new Single(this.array[i], this.schema).parse())
+export class List extends Single {
+    constructor(array, schema) {
+        if (!(array instanceof Array)) throw new Error('Transformer received no valid array');
+        super(array, schema, true);
     }
-    return response;
-};
 
-List.prototype.add = Add;
-List.prototype.remove = Remove;
-
-exports.Single = Single;
-exports.List = List;
+    parse() {
+        var response = [];
+        for (var i in this.data) {
+            response.push(new Single(this.data[i], this.schema).parse());
+        }
+        return response;
+    }
+}
