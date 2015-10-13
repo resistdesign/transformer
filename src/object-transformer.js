@@ -1,3 +1,5 @@
+import JSONQuery from 'json-query';
+
 export class Single {
     data;
     schema;
@@ -42,7 +44,7 @@ export class Single {
                 }
                 value = value[split[i]];
             }
-            response[index] = value;
+            response[index] = JSONQuery(index, {data: this.data});
         }
         return response;
     }
