@@ -3,13 +3,15 @@ import JSONQuery from 'json-query';
 export class Single {
     data;
     schema;
+    locals;
 
-    constructor(object, schema) {
+    constructor(object, schema, locals) {
         if (typeof object !== 'object') throw new Error('Transformer received no valid object');
         if (object instanceof Array) throw new Error('Transformer received no valid object');
         this.data = object;
         if (!schema) throw new Error('Transformer received no valid schema');
         this.schema = schema;
+        this.locals = locals;
     }
 
     add(key, value) {
@@ -44,23 +46,23 @@ export class Single {
                 }
                 value = value[split[i]];
             }
-            response[index] = JSONQuery(index, {data: this.data});
+            response[index] = JSONQuery(index, {data: this.data, locals: this.locals});
         }
         return response;
     }
 }
 
 export class List extends Single {
-    constructor(array, schema) {
+    constructor(array, schema, locals) {
         if (!(array instanceof Array)) throw new Error('Transformer received no valid array');
-        super({}, schema);
+        super({}, schema, locals);
         this.data = array;
     }
 
     parse() {
         var response = [];
         for (var i in this.data) {
-            response.push(new Single(this.data[i], this.schema).parse());
+            response.push(new Single(this.data[i], this.schema, this.locals).parse());
         }
         return response;
     }
