@@ -27,26 +27,11 @@ export class Single {
     parse() {
         var response = {};
         for (var index in this.schema) {
-            var split = this.schema[index].split('.');
-            var value = this.data[split[0]];
-            var breadcrumbs = split[0];
-
-            if (!value && split.length > 1) {
-                throw new Error('Malformed object, missing attribute "' +
-                    breadcrumbs + '" when trying to get attribute ' +
-                    breadcrumbs + '[' + split[1] + ']');
+            var targetKey = this.schema[index];
+            var value = JSONQuery(targetKey, {data: this.data, locals: this.locals}).value;
+            if (typeof value !== 'undefined' && value !== null) {
+                response[index] = value;
             }
-
-            for (var i = 1; i < split.length; i++) {
-                breadcrumbs += '[' + split[i] + ']';
-                if (!value[split[i]] && i + 1 !== split.length) {
-                    throw new Error('Malformed object, missing attribute "' +
-                        breadcrumbs + '" when trying to get attribute ' +
-                        breadcrumbs + '[' + split[i + 1] + ']');
-                }
-                value = value[split[i]];
-            }
-            response[index] = JSONQuery(index, {data: this.data, locals: this.locals});
         }
         return response;
     }

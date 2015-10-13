@@ -90,7 +90,7 @@ describe('Transformer', function () {
             parsed.must.have.keys(['title', 'street']);
         });
 
-        it('should throw if trying to parse object with missing key', function () {
+        it('should not have schema key if trying to parse object with missing key', function () {
             model = {
                 this: 'fails'
             };
@@ -98,12 +98,11 @@ describe('Transformer', function () {
                 'title': 'certainly.fails'
             };
             var transformer = new Transformer.Single(model, schema);
-            expect(function () {
-                transformer.parse();
-            }).to.throw();
+            var parsed = transformer.parse();
+            parsed.must.not.have.keys(['title']);
         });
 
-        it('should throw if trying to parse object with missing deep key', function () {
+        it('should not have schema key if trying to parse object with missing deep key', function () {
             model = {
                 this: 'fails'
             };
@@ -111,9 +110,8 @@ describe('Transformer', function () {
                 'title': 'this.certainly.fails'
             };
             var transformer = new Transformer.Single(model, schema);
-            expect(function () {
-                transformer.parse();
-            }).to.throw();
+            var parsed = transformer.parse();
+            parsed.must.not.have.keys(['title']);
         });
     });
 
