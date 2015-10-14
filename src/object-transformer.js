@@ -42,7 +42,7 @@ export class Single {
                 }
 
                 if (newData instanceof Array) {
-                    response[index] = new List(newData, newSchema, newLocals).parse();
+                    response[index] = new List(newData, newSchema, newLocals, target.filter).parse();
                 } else {
                     response[index] = new Single(newData, newSchema, newLocals).parse();
                 }
@@ -59,17 +59,30 @@ export class Single {
 }
 
 export class List extends Single {
-    constructor(array, schema, locals) {
+    filter;
+
+    constructor(array, schema, locals, filter) {
         if (!(array instanceof Array)) throw new Error('Transformer received no valid array');
         super({}, schema, locals);
         this.data = array;
+        if (typeof filter !== 'undefined' && typeof filter !== 'object') {
+            throw new Error('Transformer received an invalid filter');
+        }
+        this.filter = filter;
     }
 
     parse() {
         var response = [];
-        for (var i in this.data) {
-            response.push(new Single(this.data[i], this.schema, this.locals).parse());
-        }
+        this.data.forEach(item => {
+            if (this.filter) {
+                for (var k in this.filter) {
+                    if (item[k] !== this.filter[k]) {
+                        return;
+                    }
+                }
+            }
+            response.push(new Single(item, this.schema, this.locals).parse());
+        });
         return response;
     }
 }

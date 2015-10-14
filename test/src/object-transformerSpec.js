@@ -172,7 +172,10 @@ describe('Transformer', function () {
             nestedSchema = {
                 firstName: 'name',
                 goldBoxingAwards: {
-                    data: 'sports.boxing.awards[type=gold]',
+                    data: 'sports.boxing.awards',
+                    filter: {
+                        type: 'gold'
+                    },
                     schema: {
                         label: 'name'
                     }
