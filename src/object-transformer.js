@@ -29,7 +29,6 @@ export class Single {
         for (var index in this.schema) {
             var target = this.schema[index];
             var options = {data: this.data, locals: this.locals};
-            var value = JSONQuery(target, options).value;
 
             if (typeof target === 'object') {
                 var newData = this.data;
@@ -42,15 +41,17 @@ export class Single {
                     newLocals = target.locals || newLocals;
                 }
 
-                if (newSchema instanceof Array) {
-                    var listSchema = newSchema[0];
-
-                    response[index] = new List(newData, listSchema, newLocals).parse();
+                if (newData instanceof Array) {
+                    response[index] = new List(newData, newSchema, newLocals).parse();
                 } else {
                     response[index] = new Single(newData, newSchema, newLocals).parse();
                 }
-            } else if (typeof value !== 'undefined' && value !== null) {
-                response[index] = value;
+            } else {
+                var value = JSONQuery(target, options).value;
+
+                if (typeof value !== 'undefined' && value !== null) {
+                    response[index] = value;
+                }
             }
         }
         return response;
