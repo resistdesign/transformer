@@ -45,7 +45,7 @@ export class Single {
                 if (newSchema instanceof Array) {
                     var listSchema = newSchema[0];
 
-                    response[index] = new List(newData, listSchema, newLocals);
+                    response[index] = new List(newData, listSchema, newLocals).parse();
                 } else {
                     response[index] = new Single(newData, newSchema, newLocals).parse();
                 }
