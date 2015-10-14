@@ -146,7 +146,7 @@ describe('Transformer', function () {
 
     describe('Single w/ Nested Schemas', function () {
 
-        it('should find a nested object and transform it', function () {
+        beforeEach(function () {
             nestedModel = {
                 name: 'Vlad',
                 sports: {
@@ -169,6 +169,9 @@ describe('Transformer', function () {
                     }
                 }
             };
+        });
+
+        it('should find a nested array and transform it', function () {
             nestedSchema = {
                 firstName: 'name',
                 goldBoxingAwards: {
@@ -186,6 +189,22 @@ describe('Transformer', function () {
             var parsed = transformer.parse();
             expect(parsed.goldBoxingAwards.length).to.equal(2);
             expect(parsed.goldBoxingAwards[1].label).to.equal('Metallic Gold');
+        });
+
+        it('should find a nested object and transform it', function () {
+            nestedSchema = {
+                firstName: 'name',
+                mainSport: {
+                    data: 'sports.boxing',
+                    schema: {
+                        title: 'label'
+                    }
+                }
+            };
+
+            var transformer = new Transformer.Single(nestedModel, nestedSchema);
+            var parsed = transformer.parse();
+            expect(parsed.mainSport.title).to.equal('Boxing');
         });
 
     });
