@@ -27,9 +27,29 @@ export class Single {
     parse() {
         var response = {};
         for (var index in this.schema) {
-            var targetKey = this.schema[index];
-            var value = JSONQuery(targetKey, {data: this.data, locals: this.locals}).value;
-            if (typeof value !== 'undefined' && value !== null) {
+            var target = this.schema[index];
+            var options = {data: this.data, locals: this.locals};
+            var value = JSONQuery(target, options).value;
+
+            if (typeof target === 'object') {
+                var newData = this.data;
+                var newSchema = this.schema;
+                var newLocals = this.locals;
+
+                if (typeof target.data === 'string') {
+                    newData = JSONQuery(target.data, options).value;
+                    newSchema = target.schema || newSchema;
+                    newLocals = target.locals || newLocals;
+                }
+
+                if (newSchema instanceof Array) {
+                    var listSchema = newSchema[0];
+
+                    response[index] = new List(newData, listSchema, newLocals);
+                } else {
+                    response[index] = new Single(newData, newSchema, newLocals).parse();
+                }
+            } else if (typeof value !== 'undefined' && value !== null) {
                 response[index] = value;
             }
         }
