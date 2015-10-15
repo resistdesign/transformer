@@ -1,9 +1,9 @@
-[ ![Codeship Status for manuelvulp/object-transformer](https://codeship.io/projects/10036310-05c2-0132-c600-0e3e5d6e47ce/status)](https://codeship.io/projects/30943)
-[![Coverage Status](https://img.shields.io/coveralls/manuelvulp/object-transformer.svg)](https://coveralls.io/r/manuelvulp/object-transformer?branch=master)
-
 ### [Node.js] Object-transformer
 
-Utility to transform objects 
+An advanced utility to transform nested object structures.
+
+Implements [mmckegg/json-query](http://github.com/mmckegg/json-query)
+for nested path resolution and advanced queries.
 
 ```
 npm install object-transformer
@@ -58,7 +58,7 @@ var listSchema = {
 var single = new Transformer.Single(models[0], singleSchema).parse();
 console.log(single); // Output: { title: 'John', street: 'FooStreet' }
 
-var list = new Transformer.List(models, listSchema).parse();
+var list = new Transformer.List(models, listSchema /* [,] Optional `locals` for `json-query` */ ).parse();
 console.log(list);  
 
 /* Output:
@@ -80,5 +80,67 @@ console.log(list);
         }
     }
 ]
+*/
+```
+# Nested Schema Example
+
+```javascript
+var nestedModel = {
+    name: 'Vlad',
+    sports: {
+        boxing: {
+            label: 'Boxing',
+            awards: [
+                {
+                    // This data is seriously deep down in there isn't it?!
+                    name: 'Shiney Gold',
+                    type: 'gold'
+                },
+                {
+                    name: 'Metallic Gold',
+                    type: 'gold'
+                },
+                {
+                    name: 'Shabby Trinket',
+                    type: 'bronze'
+                }
+            ]
+        }
+    }
+};
+
+var nestedSchema = {
+    firstName: 'name',
+    goldBoxingAwards: {
+        // The value here can be a `json-query`.
+        data: 'sports.boxing.awards',
+        // Only select objects in an array with values matching those specified in the filter.
+        filter: {
+            type: 'gold'
+        },
+        // A sub-schema with paths relative to the `data` path.
+        schema: {
+            label: 'name'
+        },
+        // Optional locals for `json-query`.
+        locals: undefined
+    }
+};
+
+var transformer = new Transformer.Single(nestedModel, nestedSchema /* [,] Optional `locals` for `json-query` */ );
+console.log(transformer.parse());
+
+/* Output:
+{
+    "firstName": "Vlad",
+    "goldBoxingAwards": [
+        {
+            "label": "Shiney Gold"
+        },
+        {
+            "label": "Metallic Gold"
+        }
+    ]
+}
 */
 ```
