@@ -1,15 +1,19 @@
-### [Node.js] Object-transformer
+| ![Transformer](logo.svg) | <h1>Transformer</h1> |
+|--------------------------|----------------------|
 
-An advanced utility to transform nested object structures.
+### An advanced utility for transforming nested object structures.
 
-Implements [mmckegg/json-query](http://github.com/mmckegg/json-query)
+- ES2016
+- Forked from [manuelvulp/object-transformer](https://github.com/manuelvulp/object-transformer)
+with heavy alteration.
+- Implements [mmckegg/json-query](http://github.com/mmckegg/json-query)
 for nested path resolution and advanced queries.
 
 ```
-npm install object-transformer
+npm i --save @resistdesign/transformer
 ```
 
-#Example
+## Example
 
 ```javascript
 var Transformer = require('object-transformer');
@@ -82,7 +86,7 @@ console.log(list);
 ]
 */
 ```
-# Nested Schema Example
+## Nested Schema Example
 
 ```javascript
 var nestedModel = {
