@@ -9,8 +9,16 @@ with heavy alteration.
 - Implements [mmckegg/json-query](http://github.com/mmckegg/json-query)
 for nested path resolution and advanced queries.
 
-```
+## Install
+
+```bash
 npm i --save @resistdesign/transformer
+```
+
+## Test
+
+```bash
+npm test
 ```
 
 ## Example
