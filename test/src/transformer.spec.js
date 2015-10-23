@@ -1,16 +1,16 @@
-var path = require('path');
-var expect = require('must');
-var Transformer = require('../../index');
+import path from 'path';
+import expect from 'must';
+import { Single, List } from '../../index';
 
-describe('Transformer', function () {
+describe('Transformer', () => {
 
-    var model;
-    var models;
-    var schema;
-    var nestedModel;
-    var nestedSchema;
+    let model,
+        models,
+        schema,
+        nestedModel,
+        nestedSchema;
 
-    beforeEach(function () {
+    beforeEach(() => {
         model = {
             id: '00eb000a0de000b000baa0ea',
             user: {
@@ -48,105 +48,113 @@ describe('Transformer', function () {
         };
     });
 
-    describe('Single', function () {
+    describe('Single', () => {
 
-        it('should throw if no object is given', function () {
-            expect(function () {
-                new Transformer.Single();
+        it('should throw if no object is given', () => {
+            expect(() => {
+                new Single();
             }).to.throw();
         });
 
-        it('should throw if no schema is given', function () {
-            expect(function () {
-                new Transformer.Single(model);
+        it('should throw if no schema is given', () => {
+            expect(() => {
+                new Single(model);
             }).to.throw();
         });
 
-        it('should throw if array is given instead of an object', function () {
-            expect(function () {
-                new Transformer.Single(models);
+        it('should throw if array is given instead of an object', () => {
+            expect(() => {
+                new Single(models);
             }).to.throw();
         });
 
-        it('should accept valid object and schema', function () {
-            expect(function () {
-                new Transformer.Single(model, schema);
+        it('should accept valid object and schema', () => {
+            expect(() => {
+                new Single(model, schema);
             }).to.not.throw();
         });
 
-        it('should add new key to schema', function () {
-            var transformer = new Transformer.Single(model, schema);
+        it('should add new key to schema', () => {
+            const transformer = new Single(model, schema);
+
             transformer.add('test', 'user.id');
             transformer.schema['test'].must.equal('user.id');
         });
 
-        it('should remove key from schema', function () {
-            var transformer = new Transformer.Single(model, schema);
+        it('should remove key from schema', () => {
+            const transformer = new Single(model, schema);
+
             transformer.remove('title');
             expect(transformer.schema['title']).to.be.undefined();
         });
 
-        it('should parse valid response from object based on schema', function () {
-            var transformer = new Transformer.Single(model, schema);
-            var parsed = transformer.parse();
+        it('should parse valid response from object based on schema', () => {
+            const transformer = new Single(model, schema);
+            const parsed = transformer.parse();
+
             parsed.must.have.keys(['title', 'street']);
         });
 
-        it('should not have schema key if trying to parse object with missing key', function () {
+        it('should not have schema key if trying to parse object with missing key', () => {
             model = {
                 this: 'fails'
             };
             schema = {
                 'title': 'certainly.fails'
             };
-            var transformer = new Transformer.Single(model, schema);
-            var parsed = transformer.parse();
+
+            const transformer = new Single(model, schema);
+            const parsed = transformer.parse();
+
             parsed.must.not.have.keys(['title']);
         });
 
-        it('should not have schema key if trying to parse object with missing deep key', function () {
+        it('should not have schema key if trying to parse object with missing deep key', () => {
             model = {
                 this: 'fails'
             };
             schema = {
                 'title': 'this.certainly.fails'
             };
-            var transformer = new Transformer.Single(model, schema);
-            var parsed = transformer.parse();
+
+            const transformer = new Single(model, schema);
+            const parsed = transformer.parse();
+
             parsed.must.not.have.keys(['title']);
         });
     });
 
-    describe('List', function () {
+    describe('List', () => {
 
-        it('should throw if no array is given', function () {
-            expect(function () {
-                new Transformer.List();
+        it('should throw if no array is given', () => {
+            expect(() => {
+                new List();
             }).to.throw();
         });
 
-        it('should throw if no schema is given', function () {
-            expect(function () {
-                new Transformer.List(models);
+        it('should throw if no schema is given', () => {
+            expect(() => {
+                new List(models);
             }).to.throw();
         });
 
-        it('should accept valid array and schema', function () {
-            expect(function () {
-                new Transformer.List(models, schema);
+        it('should accept valid array and schema', () => {
+            expect(() => {
+                new List(models, schema);
             }).to.not.throw();
         });
 
-        it('should parse all array members', function () {
-            var transformer = new Transformer.List(models, schema);
-            var parsed = transformer.parse();
+        it('should parse all array members', () => {
+            const transformer = new List(models, schema);
+            const parsed = transformer.parse();
+
             expect(parsed.length).to.equal(2);
         });
     });
 
-    describe('Single w/ Nested Schemas', function () {
+    describe('Single w/ Nested Schemas', () => {
 
-        beforeEach(function () {
+        beforeEach(() => {
             nestedModel = {
                 name: 'Vlad',
                 sports: {
@@ -171,7 +179,7 @@ describe('Transformer', function () {
             };
         });
 
-        it('should find a nested array and transform it', function () {
+        it('should find a nested array and transform it', () => {
             nestedSchema = {
                 firstName: 'name',
                 goldBoxingAwards: {
@@ -185,13 +193,14 @@ describe('Transformer', function () {
                 }
             };
 
-            var transformer = new Transformer.Single(nestedModel, nestedSchema);
-            var parsed = transformer.parse();
+            const transformer = new Single(nestedModel, nestedSchema);
+            const parsed = transformer.parse();
+
             expect(parsed.goldBoxingAwards.length).to.equal(2);
             expect(parsed.goldBoxingAwards[1].label).to.equal('Metallic Gold');
         });
 
-        it('should find a nested object and transform it', function () {
+        it('should find a nested object and transform it', () => {
             nestedSchema = {
                 firstName: 'name',
                 mainSport: {
@@ -202,8 +211,9 @@ describe('Transformer', function () {
                 }
             };
 
-            var transformer = new Transformer.Single(nestedModel, nestedSchema);
-            var parsed = transformer.parse();
+            const transformer = new Single(nestedModel, nestedSchema);
+            const parsed = transformer.parse();
+
             expect(parsed.mainSport.title).to.equal('Boxing');
         });
 

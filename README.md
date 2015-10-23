@@ -24,9 +24,9 @@ npm test
 ## Example
 
 ```javascript
-var Transformer = require('object-transformer');
+import { Single, List } from '@resistdesign/transformer';
 
-var models = [
+const models = [
     {
         id: '00eb000a0de000b000baa0ea',
         user: {
@@ -57,20 +57,22 @@ var models = [
 
 // Schemas that will be used to transform the model
 
-var singleSchema = {
+const singleSchema = {
     'title': 'user.name',
     'street': 'user.address.street'
 };
 
-var listSchema = {
+const listSchema = {
     'message': 'message',
     'address': 'user.address'
 };
 
-var single = new Transformer.Single(models[0], singleSchema).parse();
+const single = new Single(models[0], singleSchema).parse();
+
 console.log(single); // Output: { title: 'John', street: 'FooStreet' }
 
-var list = new Transformer.List(models, listSchema /* [,] Optional `locals` for `json-query` */ ).parse();
+const list = new List(models, listSchema /* [,] Optional `locals` for `json-query` */ ).parse();
+
 console.log(list);  
 
 /* Output:
@@ -97,7 +99,7 @@ console.log(list);
 ## Nested Schema Example
 
 ```javascript
-var nestedModel = {
+const nestedModel = {
     name: 'Vlad',
     sports: {
         boxing: {
@@ -121,7 +123,7 @@ var nestedModel = {
     }
 };
 
-var nestedSchema = {
+const nestedSchema = {
     firstName: 'name',
     goldBoxingAwards: {
         // The value here can be a `json-query`.
@@ -139,7 +141,8 @@ var nestedSchema = {
     }
 };
 
-var transformer = new Transformer.Single(nestedModel, nestedSchema /* [,] Optional `locals` for `json-query` */ );
+const transformer = new Single(nestedModel, nestedSchema /* [,] Optional `locals` for `json-query` */ );
+
 console.log(transformer.parse());
 
 /* Output:
