@@ -1,6 +1,6 @@
 {
   "name": "@resistdesign/transformer",
-  "version": "0.0.5",
+  "version": "0.0.0",
   "repository": "https://github.com/manuelvulp/object-transformer",
   "homepage": "https://github.com/manuelvulp/object-transformer",
   "description": "An advanced utility for transforming nested object structures.",
