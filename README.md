@@ -1,5 +1,4 @@
-| ![Transformer](logo.svg) | <h1>Transformer</h1> |
-|--------------------------|----------------------|
+# Transformer
 
 ### An advanced utility for transforming nested object structures.
 
